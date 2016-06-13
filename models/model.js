@@ -1,5 +1,9 @@
+// Bookshelf postgres db ORM object. Basically it makes
+// it simple and less error port to insert/query the db.
 var dbBookshelf = require('../dbknex').DB,
     knex = dbBookshelf.knex;
+// Used to encrypt user password before adding it to db.
+var bcrypt = require('bcrypt-nodejs');
 
 var User = dbBookshelf.Model.extend({
     tableName: 'users',
@@ -17,6 +21,28 @@ var User = dbBookshelf.Model.extend({
 //         callback(user.toJSON().id);
 //     });
 // }
+
+function registerNewUser(username, password) {
+    return new Promise(function(resolve, reject){
+        // Before making the account, try and fetch a username to see if it already exists.
+        var usernamePromise = new User({ username: username }).fetch();
+
+        usernamePromise.then(function(model) {
+            if (model) {
+                reject("username already exists");
+            } else {
+                var hash = bcrypt.hashSync(password);
+
+                // Make a new postgres db row of the account
+                var signUpUser = new User({ username: username, password: hash });
+
+                signUpUser.save({}, {method: 'insert'}).then(function(model) {
+                    resolve(model);
+                });
+            }
+        });
+    });
+}
 
 // ------------------------------
 // grabUserCredentials
@@ -68,6 +94,7 @@ function grabUserCredentials(userId, callback) {
 
 module.exports = {
     // createNewUser       : createNewUser,
+    registerNewUser     : registerNewUser,
     grabUserCredentials : grabUserCredentials,
     User                : User,
 };
