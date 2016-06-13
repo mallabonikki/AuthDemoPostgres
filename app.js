@@ -1,7 +1,7 @@
 var express     = require("express"),
     passport    = require("passport"),
     bodyParser  = require("body-parser");
-var Model       = require('./models/model');
+var User       = require('./models/model');
 
 var app = express();
 app.set('view engine', 'ejs');
@@ -26,7 +26,7 @@ app.get("/", function(req, res){
 });
 
 app.get("/secret",isLoggedIn, function(req, res){
-   res.render("secret");
+   res.render("secret", {user: req.user});
 });
 
 // Auth Routes
@@ -40,7 +40,7 @@ app.get("/register", function(req, res){
 app.post("/register", function(req, res){
     // Here, req.body is { username, password }
     var user = req.body;
-    Model.User.registerNewUser(user.username, user.password)
+    User.registerNewUser(user.username, user.password)
         .then(function(registeredUser){
             // Sign in the newly registered uesr
             // res.redirect(307, '/login');

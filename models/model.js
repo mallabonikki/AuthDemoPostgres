@@ -5,8 +5,7 @@ var bcrypt = require('bcrypt');
 
 // Bookshelf postgres db ORM object. Basically it makes
 // it simple and less error port to insert/query the db.
-var dbBookshelf = require('../db'),
-    knex = dbBookshelf.knex;
+var dbBookshelf = require('../db');
 
 // var User = dbBookshelf.model('User', {
 var User = dbBookshelf.Model.extend({
@@ -19,7 +18,8 @@ var User = dbBookshelf.Model.extend({
             // Before making the account, try and fetch a username to see if it already exists.
             var usernamePromise = new that({ username: username }).fetch();
 
-            usernamePromise.then(function(model) {
+            usernamePromise
+            .then(function(model) {
                 if (model) {
                     reject("username already exists");
                 } else {
@@ -36,6 +36,10 @@ var User = dbBookshelf.Model.extend({
                             resolve(model.toJSON());
                         });
                 }
+            })
+            .catch((err) => {
+                console.log("Error during register: " + err);
+                reject(err);
             });
         });
     },
@@ -62,66 +66,68 @@ var User = dbBookshelf.Model.extend({
             })
             .catch((err) => {
                 console.log("Error during login: " + err);
+                reject(err);
+            });
+        });
+    },
+
+    // ------------------------------
+    // grabUserCredentials
+    // ------------------------------
+    // Returns a JSON list of a single user like this:
+    // {
+    //     username: 'sampleun',
+    //     local: {
+    //          username: 'sampleun'
+    //          password: 'samplepw'
+    //     },
+    // }
+    grabUserCredentials: function(userId) {
+        // Skeleton JSON
+        var loginUser = {
+            username: null,
+            local: {
+                username: null,
+                password: null,
+            }
+        };
+
+        var that = this;
+        return new Promise(function(resolve, reject){
+            new that({id: userId})
+            .fetch()
+            .then(function(data) {
+
+                if (!data) {
+                    reject('Could not find user with that ID');
+                } else {
+                    // Fill in loginUser JSON
+                    console.log("Found user: " + JSON.stringify(data));
+                    let row = data.toJSON();
+                    loginUser.username = row.username;
+                    loginUser.local = data.toJSON();
+                    resolve(loginUser);
+                }
+            })
+            .catch((err) => {
+                console.log("Error during grabUserCredentials: " + err);
+                reject(err);
             });
         });
     }
 });
 
-// ------------------------------
-// createNewUser
-// ------------------------------
 
-
-
-// ------------------------------
-// grabUserCredentials
-// ------------------------------
-// Returns a JSON list of a single user like this:
-// {
-//     local: {
-//          username: 'sampleun'
-//          password: 'samplepw'
-//     },
-// }
-function grabUserCredentials(userId, callback) {
-    // Skeleton JSON
-    var loginUser = {
-        local: {
-            username: null,
-            password: null,
-        }
-    };
-
-    // SQL joins to get all credentials/tokens of a single user
-    // to fill in loginUser JSON.
-    knex.select('users.id', 'users.username', 'users.password')
-                .from('users')
-                .where('users.id', '=', userId).then(function(row) {
-        row = row[0];
-
-        if (!row) {
-            callback('Could not find user with that ID', null);
-        } else {
-            // Fill in loginUser JSON
-            loginUser.local.username      = row.username;
-            loginUser.local.password      = row.password;
-
-            callback(null, loginUser);
-        }
+(function testdb() {
+    User.collection()
+    .fetch()
+    .then(function(collection) {
+        console.log("Select all: " + collection.length + " entries.");
+        console.log(collection.toJSON());
+    })
+    .catch(function(err) {
+        console.log("Error during select all: " + err);
     });
-}
+})();
 
-// (function testdb() {
-//     knex.select('users.id', 'users.username', 'users.password')
-//                 .from('users')
-//                 .then(function(row) {
-//         console.log("Knex results: ");
-//         console.log(JSON.stringify(row));
-//         console.log('--------');
-//     });
-// })();
-
-module.exports = {
-    grabUserCredentials : grabUserCredentials,
-    User                : User,
-};
+module.exports = User;
