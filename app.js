@@ -3,20 +3,6 @@ var express     = require("express"),
     bodyParser  = require("body-parser");
 var Model       = require('./models/model.js');
 
-// var dbPromise             = require("./dbpromise");
-
-// (function testdb() {
-// 	dbPromise.any('SELECT * FROM users', [])
-// 		.then((rows) => {
-// 			console.log(rows.length);
-// 			console.log("sendAllData: " + JSON.stringify(rows));
-// 		})
-// 		.catch(err => {
-// 			console.error('error happened during query: ', err);
-// 			console.log('--------');
-// 		});
-// })();
-
 var app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
