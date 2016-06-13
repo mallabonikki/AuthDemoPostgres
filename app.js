@@ -3,9 +3,9 @@ var express               = require("express"),
     passport              = require("passport"),
     bodyParser            = require("body-parser"),
     User                  = require("./models/user"),
-    LocalStrategy         = require("passport-local"),
-    passportLocalMongoose = require("passport-local-mongoose")
-    
+    LocalStrategy         = require("passport-local");
+// var    passportLocalMongoose = require("passport-local-mongoose");
+
 mongoose.connect("mongodb://localhost/auth_demo_app");
 var app = express();
 app.set('view engine', 'ejs');
@@ -32,14 +32,14 @@ app.get("/", function(req, res){
 });
 
 app.get("/secret",isLoggedIn, function(req, res){
-   res.render("secret"); 
+   res.render("secret");
 });
 
 // Auth Routes
 
 //show sign up form
 app.get("/register", function(req, res){
-   res.render("register"); 
+   res.render("register");
 });
 //handling user sign up
 app.post("/register", function(req, res){
@@ -57,7 +57,7 @@ app.post("/register", function(req, res){
 // LOGIN ROUTES
 //render login form
 app.get("/login", function(req, res){
-   res.render("login"); 
+   res.render("login");
 });
 //login logic
 //middleware
