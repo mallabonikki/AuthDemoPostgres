@@ -4,7 +4,20 @@ var express               = require("express"),
     bodyParser            = require("body-parser"),
     User                  = require("./models/user"),
     LocalStrategy         = require("passport-local");
-// var    passportLocalMongoose = require("passport-local-mongoose");
+var dbBookshelf           = require("./models/model");
+// var dbPromise             = require("./dbpromise");
+
+// (function testdb() {
+// 	dbPromise.any('SELECT * FROM users', [])
+// 		.then((rows) => {
+// 			console.log(rows.length);
+// 			console.log("sendAllData: " + JSON.stringify(rows));
+// 		})
+// 		.catch(err => {
+// 			console.error('error happened during query: ', err);
+// 			console.log('--------');
+// 		});
+// })();
 
 mongoose.connect("mongodb://localhost/auth_demo_app");
 var app = express();

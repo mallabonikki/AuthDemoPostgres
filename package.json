@@ -10,13 +10,18 @@
   "author": "Colt",
   "license": "ISC",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.14.1",
+    "bookshelf": "^0.9.5",
     "ejs": "^2.3.4",
     "express": "^4.13.3",
     "express-session": "^1.11.3",
+    "knex": "^0.11.5",
     "mongoose": "^4.1.12",
     "passport": "^0.3.0",
     "passport-local": "^1.0.0",
-    "passport-local-mongoose": "^3.1.0"
+    "passport-local-mongoose": "^3.1.0",
+    "pg": "^5.1.0",
+    "pg-promise": "^4.6.3"
   }
 }
