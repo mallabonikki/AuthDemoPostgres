@@ -30,3 +30,6 @@ The application has four registration routes and a secret route:
     `psql -U postgres -a -f models/psql_script.sql`.
 5. Download all dependencies using `npm install`
 6. Run the application using `npm start`
+
+## Thanks
+Special thanks to this repository: https://github.com/keithyong/postgres-oauth-example
