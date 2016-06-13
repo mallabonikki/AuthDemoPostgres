@@ -1,7 +1,7 @@
 var express     = require("express"),
     passport    = require("passport"),
     bodyParser  = require("body-parser");
-var Model       = require('./models/model.js');
+var Model       = require('./models/model');
 
 var app = express();
 app.set('view engine', 'ejs');
@@ -13,8 +13,7 @@ app.use(require("express-session")({
     saveUninitialized: false  // TODO: change to true (why?)
 }));
 
-require('./passportconfig.js')(passport);
-
+require('./auth/passportconfig.js')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 

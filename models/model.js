@@ -1,6 +1,6 @@
 // Bookshelf postgres db ORM object. Basically it makes
 // it simple and less error port to insert/query the db.
-var dbBookshelf = require('../dbknex').DB,
+var dbBookshelf = require('../db').DB,
     knex = dbBookshelf.knex;
 // Used to encrypt user password before adding it to db.
 var bcrypt = require('bcrypt');
@@ -8,6 +8,8 @@ var bcrypt = require('bcrypt');
 var User = dbBookshelf.Model.extend({
     tableName: 'users',
     idAttribute: 'id'
+},{
+
 });
 
 // ------------------------------
