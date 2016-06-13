@@ -11,6 +11,7 @@ var knex = require('knex')({
     }
 });
 
-var DB = require('bookshelf')(knex);
+var bookshelf = require('bookshelf')(knex);
+bookshelf.plugin('registry'); // Resolve circular dependencies with relations
 
-module.exports.DB = DB;
+module.exports = bookshelf;

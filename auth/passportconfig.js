@@ -17,7 +17,7 @@ module.exports = function(passport) {
 
     // Tries to log-in
     passport.use(new LocalStrategy(function(username, password, done) {
-        Model.logIn(username, password)
+        Model.User.logIn(username, password)
             .then(function(user){
                 return done(null, user);
             })

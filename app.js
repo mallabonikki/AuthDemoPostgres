@@ -40,7 +40,7 @@ app.get("/register", function(req, res){
 app.post("/register", function(req, res){
     // Here, req.body is { username, password }
     var user = req.body;
-    Model.registerNewUser(user.username, user.password)
+    Model.User.registerNewUser(user.username, user.password)
         .then(function(registeredUser){
             // Sign in the newly registered uesr
             // res.redirect(307, '/login');

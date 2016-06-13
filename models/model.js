@@ -1,62 +1,76 @@
-// Bookshelf postgres db ORM object. Basically it makes
-// it simple and less error port to insert/query the db.
-var dbBookshelf = require('../db').DB,
-    knex = dbBookshelf.knex;
+'use strict';
+
 // Used to encrypt user password before adding it to db.
 var bcrypt = require('bcrypt');
 
+// Bookshelf postgres db ORM object. Basically it makes
+// it simple and less error port to insert/query the db.
+var dbBookshelf = require('../db'),
+    knex = dbBookshelf.knex;
+
+// var User = dbBookshelf.model('User', {
 var User = dbBookshelf.Model.extend({
     tableName: 'users',
     idAttribute: 'id'
 },{
+    registerNewUser: function(username, password) {
+        var that = this;
+        return new Promise(function(resolve, reject){
+            // Before making the account, try and fetch a username to see if it already exists.
+            var usernamePromise = new that({ username: username }).fetch();
 
+            usernamePromise.then(function(model) {
+                if (model) {
+                    reject("username already exists");
+                } else {
+                    //var salt = bcrypt.genSaltSync(10);
+                    var hash = bcrypt.hashSync(password, 10);
+
+                    // Make a new postgres db row of the account
+                    var signUpUser = new that({ username: username, password: hash });
+
+                    signUpUser
+                        .save({}, {method: 'insert'})
+                        .then(function(model) {
+                            console.log('Registered new user: ' + JSON.stringify(model));
+                            resolve(model.toJSON());
+                        });
+                }
+            });
+        });
+    },
+
+    logIn: function(username, password) {
+        var that = this;
+        return new Promise(function(resolve, reject){
+            new that({username: username})
+            .fetch()
+            .then(function(data) {
+                console.log('Logged in user: ' + JSON.stringify(data));
+                if (data === null) {
+                    reject('Invalid username or password');
+                } else {
+                    // console.log(data.get('password'));
+                    var user = data.toJSON();
+                    // console.log(user.password);
+                    if (!bcrypt.compareSync(password, user.password)) {
+                        reject('Invalid password');
+                    } else {
+                        resolve(user);
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log("Error during login: " + err);
+            });
+        });
+    }
 });
 
 // ------------------------------
 // createNewUser
 // ------------------------------
-function registerNewUser(username, password) {
-    return new Promise(function(resolve, reject){
-        // Before making the account, try and fetch a username to see if it already exists.
-        var usernamePromise = new User({ username: username }).fetch();
 
-        usernamePromise.then(function(model) {
-            if (model) {
-                reject("username already exists");
-            } else {
-                //var salt = bcrypt.genSaltSync(10);
-                var hash = bcrypt.hashSync(password, 10);
-
-                // Make a new postgres db row of the account
-                var signUpUser = new User({ username: username, password: hash });
-
-                signUpUser
-                    .save({}, {method: 'insert'})
-                    .then(function(model) {
-                        resolve(model.toJSON());
-                    });
-            }
-        });
-    });
-}
-
-function logIn(username, password) {
-    return new Promise(function(resolve, reject){
-        new User({username: username}).fetch().then(function(data) {
-            var user = data;
-            if (user === null) {
-                reject('Invalid username or password');
-            } else {
-                user = data.toJSON();
-                if (!bcrypt.compareSync(password, user.password)) {
-                    reject('Invalid password');
-                } else {
-                    resolve(user);
-                }
-            }
-        });
-    });
-}
 
 
 // ------------------------------
@@ -108,8 +122,6 @@ function grabUserCredentials(userId, callback) {
 // })();
 
 module.exports = {
-    registerNewUser     : registerNewUser,
     grabUserCredentials : grabUserCredentials,
-    logIn               : logIn,
     User                : User,
 };

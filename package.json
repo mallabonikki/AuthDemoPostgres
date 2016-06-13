@@ -1,14 +1,14 @@
 {
-  "name": "AuthDemo",
+  "name": "AuthDemoPostgres",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple app, showing how to use passport with Postgres. This is basically a boilerplate code.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Colt",
-  "license": "ISC",
+  "author": "C00bra",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^0.8.7",
     "body-parser": "^1.14.1",
